@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "prConcurrentLimit": 0,
+  "prHourlyLimit": 0,
+  "dependencyDashboard": true,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^myfile.yml$/"],
+      "matchStrings": [
+        "\\n  (?<depName>[^:]+):\\n    image: (?<packageName>[^\\n]+)\\n    tag: \"(?<currentValue>[^@\"]+)(?:@(?<currentDigest>sha256:[^@\"]+))?\""
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "jsonata",
+      "managerFilePatterns": ["/^myfile.yml$/"],
+      "fileFormat": "yaml",
+      "matchStrings": [
+        "$each(releases,function($v, $k){{\"depName\": $k,\"packageName\": $v.image,\"currentValue\": $split($v.tag, \"@\")[0],\"currentDigest\": $split($v.tag, \"@\")[1]}})"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ]
+}
